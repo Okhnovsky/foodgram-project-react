@@ -2,24 +2,24 @@ version: '3.3'
 services:
 
   frontend:
-    build:
-      context: ../frontend
-      dockerfile: Dockerfile
+    image: okhnovsky/frontend:v1
     volumes:
       - ../frontend/:/app/result_build/
-
+  
   db:
     image: postgres:13.0-alpine
+    expose:
+      - 5432
     volumes:
-      - /var/lib/postgresql/data/
+      - postgres_data:/var/lib/postgresql/data/
     env_file:
       - ./.env
-
+  
   backend:
-    build: ../backend/
+    image: okhnovsky/backend:v0
     restart: always
-    ports:
-    - "8000:8000"
+    expose:
+      - 8000
     volumes:
       - static_value:/app/static/
       - media_value:/app/media/
@@ -27,7 +27,7 @@ services:
       - db
     env_file:
       - ./.env
-
+  
   nginx:
     image: nginx:1.19.3
     ports:
@@ -36,6 +36,10 @@ services:
       - ./nginx.conf:/etc/nginx/conf.d/default.conf
       - ../frontend/build:/usr/share/nginx/html/
       - ../docs/:/usr/share/nginx/html/api/docs/
+      - static_value:/var/html/static/
+      - media_value:/var/html/media/
+    depends_on:
+      - backend
 
 volumes:
   static_value:
