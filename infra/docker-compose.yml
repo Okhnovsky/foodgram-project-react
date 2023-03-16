@@ -15,6 +15,7 @@ services:
     env_file:
       - ./.env
   
+  
   backend:
     image: okhnovsky/backend:v0
     restart: always
