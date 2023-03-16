@@ -120,6 +120,7 @@ REST_FRAMEWORK = {
     ['rest_framework.permissions.IsAuthenticatedOrReadOnly', ],
 }
 
+
 DJOSER = {
     'LOGIN_FIELD': 'email',
     'HIDE_USERS': False,
@@ -138,5 +139,6 @@ DJOSER = {
 }
 
 
+# media
 MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
