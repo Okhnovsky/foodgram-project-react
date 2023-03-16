@@ -7,14 +7,13 @@ services:
       - ../frontend/:/app/result_build/
   
   db:
+    container_name: db
     image: postgres:13.0-alpine
-    expose:
-      - 5432
+    restart: always
     volumes:
       - postgres_data:/var/lib/postgresql/data/
     env_file:
       - ./.env
-  
   
   backend:
     image: okhnovsky/backend:v0
