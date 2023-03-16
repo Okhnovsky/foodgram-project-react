@@ -137,8 +137,8 @@ DJOSER = {
     },
 }
 
-CORS_ORIGIN_ALLOW_ALL = True
-CORS_URLS_REGEX = r'^/api/.*$'
+# CORS_ORIGIN_ALLOW_ALL = True
+# CORS_URLS_REGEX = r'^/api/.*$'
 
 MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
