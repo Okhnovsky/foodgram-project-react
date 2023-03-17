@@ -56,34 +56,24 @@ class IngredientsViewSet(ReadOnlyModelViewSet):
     serializer_class = IngredientSerializer
     permission_classes = (IsAdminOrReadOnly,)
 
-    def find_obj(queryset, name):
-        """Поиск объектов по совпадению в начале названия и в середине."""
-        stw_queryset = list(queryset.filter(name__startswith=name))
-        cnt_queryset = queryset.filter(name__contains=name)
-        stw_queryset.extend(
-            [i for i in cnt_queryset if i not in stw_queryset]
-        )
-        queryset = stw_queryset
-        return queryset
-
-    def translation(name):
-        """Метод преобразования латинских символов в кириллицу."""
-        if name[0] == '%':
-            name = unquote(name)
-        else:
-            name = name.translate(incorrect_layout)
-        return name
-
     def get_queryset(self):
         """Получает queryset в соответствии с параметрами запроса.
         Прописные буквы преобразуются в строчные.
+        Преобразует латинские символы в кириллицу.
+        Ищет объекты по совпадению в начале названия и в середине.
         """
         name = self.request.query_params.get('name')
         queryset = self.queryset
         if name:
-            name = self.translation(name)
+            if name[0] == '%':
+                name = unquote(name)
             name = name.lower()
-            queryset = self.find_obj(queryset, name)
+            stw_queryset = list(queryset.filter(name__startswith=name))
+            cnt_queryset = queryset.filter(name__contains=name)
+            stw_queryset.extend(
+                [i for i in cnt_queryset if i not in stw_queryset]
+            )
+            queryset = stw_queryset
         return queryset
 
 
