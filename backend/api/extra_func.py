@@ -25,3 +25,16 @@ def ingred_amount_in_recipe(recipe, ingredients):
             ingredients=ingredient['ingredient'],
             amount=ingredient['amount']
         )
+
+def check_value_validate(value, klass=None):
+    if not str(value).isdecimal():
+        raise ValidationError(
+            f'{value} должно содержать цифру'
+        )
+    if klass:
+        obj = klass.objects.filter(id=value)
+        if not obj:
+            raise ValidationError(
+                f'{value} не существует'
+            )
+        return obj[0]

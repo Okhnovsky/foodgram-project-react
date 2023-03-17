@@ -1,7 +1,7 @@
 from django.core.validators import MinValueValidator
 from django.db import models
 from django.db.models import UniqueConstraint
-from users.models import User
+from users.models import MyUser
 
 # Ingredient and tags and in_favorites
 
@@ -50,12 +50,14 @@ class Ingredient(models.Model):
 class Recipe(models.Model):
     """Модель для рецептов."""
     author = models.ForeignKey(
-        User,
+        MyUser,
         on_delete=models.CASCADE,
         related_name='recipes',
+        verbose_name='Автор',
     )
     name = models.CharField(
         max_length=200,
+        verbose_name='Название блюда'
     )
     image = models.ImageField(
         upload_to='recipes/images/',
@@ -68,19 +70,20 @@ class Recipe(models.Model):
     tags = models.ManyToManyField(
         Tag,
         related_name='recipes',
+        verbose_name='Тег'
     )
     cooking_time = models.PositiveSmallIntegerField(
         validators=[MinValueValidator(1)]
     )
-    in_favorites = models.ManyToManyField(
-        User,
+    is_favorite = models.ManyToManyField(
+        MyUser,
         verbose_name='Избранное',
         related_name='favorites'
     )
-    in_buy_list = models.ManyToManyField(
-        User,
+    is_in_shopping_list = models.ManyToManyField(
+        MyUser,
         verbose_name='Список покупок',
-        related_name='buy_list'
+        related_name='shopping_list'
     )
 
     class Meta:
@@ -92,13 +95,13 @@ class Recipe(models.Model):
     
 
 class AmountIngredient(models.Model):
-    """Модель количества игредиантов для рецепта."""
+    """Модель количества игредиентов для рецепта."""
     recipe = models.ForeignKey(
         Recipe,
         on_delete=models.CASCADE,
         related_name='ingredient',
     )
-    ingredient = models.ForeignKey(
+    ingredients = models.ForeignKey(
         Ingredient,
         on_delete=models.CASCADE,
         related_name='recipe',
@@ -112,7 +115,7 @@ class AmountIngredient(models.Model):
         ordering = ('recipe',)
         constraints = (
             UniqueConstraint(
-                fields=('recipe', 'ingredient', ),
+                fields=('recipe', 'ingredients', ),
                 name='Ингридиент уже добавлен',
             ),
         )

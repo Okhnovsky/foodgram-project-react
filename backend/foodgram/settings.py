@@ -16,7 +16,7 @@ DEBUG = True
 
 ALLOWED_HOSTS = ['*']
 
-AUTH_USER_MODEL = 'users.User'
+AUTH_USER_MODEL = 'users.MyUser'
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
@@ -76,7 +76,7 @@ DATABASES = {
         'NAME': os.getenv('DB_NAME', default='postgres'),
         'USER': os.getenv('POSTGRES_USER', default='postgres'),
         'PASSWORD': os.getenv('POSTGRES_PASSWORD', default='Okhnovsky'),
-        'HOST': os.getenv('DB_HOST', default='db'),
+        'HOST': os.getenv('DB_HOST', default='127.0.0.1'),
         'PORT': os.getenv('DB_PORT', default=5432)
     }
 }
@@ -131,10 +131,10 @@ DJOSER = {
         'user_list': ('api.permissions.IsOwnerUserOrReadOnly',),
     },
     'SERIALIZERS': {
-        'user': 'api.serializers.CustomUserSerializer',
-        'user_list': 'api.serializers.CustomUserSerializer',
-        'current_user': 'api.serializers.CustomUserSerializer',
-        'user_create': 'api.serializers.CustomUserSerializer',
+        'user': 'api.serializers.UserSerializer',
+        'user_list': 'api.serializers.UserSerializer',
+        'current_user': 'api.serializers.UserSerializer',
+        'user_create': 'api.serializers.UserSerializer',
     },
 }
 

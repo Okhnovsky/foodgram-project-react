@@ -20,7 +20,7 @@ class CreateDeleteViewMixin:
         managers = {
             'follow_M2M': user.follow,
             'is_favorite_M2M': user.favorites,
-            'shopping_cart_M2M': user.buy_list,
+            'shopping_cart_M2M': user.shopping_list,
         }
         manager = managers[manager]
 

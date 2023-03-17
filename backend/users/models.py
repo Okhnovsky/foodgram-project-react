@@ -3,7 +3,7 @@ from django.contrib.auth.validators import UnicodeUsernameValidator
 from django.db import models
 
 
-class User(AbstractUser):
+class MyUser(AbstractUser):
     """Кастомная модель пользователя с расширенной функциональностью."""
     email = models.EmailField(
         max_length=254,
