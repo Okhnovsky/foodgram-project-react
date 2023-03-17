@@ -8,10 +8,6 @@ class CreateDeleteViewMixin:
     """Добавляет методы создания и удаления связей M2M"""
     add_serializer = None
 
-    def get_obj_exist(manager, obj_id):
-        obj_exist = manager.filter(id=obj_id).exists()
-        return obj_exist
-
     def add_remove_relation(self, obj_id, manager):
         user = self.request.user
         if user.is_anonymous:
@@ -28,7 +24,7 @@ class CreateDeleteViewMixin:
         serializer = self.add_serializer(
             obj, context={'request': self.request}
         )
-        obj_exist = self.get_obj_exist(manager, obj_id)
+        obj_exist = manager.filter(id=obj_id).exists()
 
         if (self.request.method in ('GET', 'POST',)) and not obj_exist:
             manager.add(obj)

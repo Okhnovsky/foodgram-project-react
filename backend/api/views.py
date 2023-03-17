@@ -20,9 +20,6 @@ from .serializers import (UserSubscribeSerializer, TagSerializer,
                           ShowRecipeSerializer,)
 
 
-User = get_user_model()
-
-
 class UserViewSet(DjoserUserViewSet, CreateDeleteViewMixin):
     """Работает с пользователями."""
     pagination_class = PageLimitPagination
@@ -93,14 +90,27 @@ class IngredientsViewSet(ReadOnlyModelViewSet):
 class RecipeViewSet(ModelViewSet, CreateDeleteViewMixin):
     """Работает с рецептами."""
     queryset = Recipe.objects.select_related('author').prefetch_related(
-        'tags', 'is_favorited', 'is_in_shopping_cart'
+        'tags',
     )
     serializer_class = RecipeSerializer
     permission_classes = (IsAuthorStaffOrReadOnly,)
     pagination_class = PageLimitPagination
     add_serializer = ShowRecipeSerializer
 
-    def authorized_user(self, user):
+
+    def get_queryset(self):
+        queryset = self.queryset
+        tags = self.request.query_params.getlist('tags')
+        if tags:
+            queryset = queryset.filter(
+                tags__slug__in=tags).distinct()
+
+        author = self.request.query_params.get('author')
+        if author:
+            queryset = queryset.filter(author=author)
+
+
+        user = self.request.user
         if user.is_anonymous:
             return queryset
 
@@ -115,22 +125,6 @@ class RecipeViewSet(ModelViewSet, CreateDeleteViewMixin):
             queryset = queryset.filter(is_favorite=user.id)
         if is_favorited in ('0', 'false',):
             queryset = queryset.exclude(is_favorite=user.id)
-
-        return queryset
-
-    def get_queryset(self):
-        queryset = self.queryset
-        tags = self.request.query_params.getlist('tags')
-        if tags:
-            queryset = queryset.filter(
-                tags__slug__in=tags).distinct()
-
-        author = self.request.query_params.get('author')
-        if author:
-            queryset = queryset.filter(author=author)
-
-        user = self.request.user
-        queryset = self.authorized_user(self, user)
 
         return queryset
 

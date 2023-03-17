@@ -4,12 +4,9 @@ from rest_framework.serializers import (ModelSerializer, SerializerMethodField,
                                         ValidationError)
 
 from recipes.models import Ingredient, Recipe, Tag
-
+from users.models import User
 from .extra_func import (check_value_validate,
                        ingred_amount_in_recipe, hex_color)
-
-
-User = get_user_model()
 
 
 class UserSerializer(ModelSerializer):
