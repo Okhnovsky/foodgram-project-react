@@ -4,7 +4,11 @@
 
 
 ## Действующий ip адрес:
-Здесь оставлю ip адрес, когда допишу вторую часть
+158.160.58.167
+
+## Логин и пароль для входа в админку:
+Логин - Okhnovsky
+Пароль - Okhnovsky
 
 ## Процесс развертывания проекта:
 Клонируйте репозиторий.
@@ -21,9 +25,41 @@ source venv\Scripts\activate
 cd ../backend
 pip install -r requirements.txt
 ```
+Создать файл .env и заполнить его:
+```
+DB_ENGINE='django.db.backends.postgresql' # указываем, что работаем с postgresql
+DB_NAME='postgres' # имя базы данных
+POSTGRES_USER='postgres' # логин для подключения к базе данных
+POSTGRES_PASSWORD='postgres' # пароль для подключения к БД (установите свой)
+DB_HOST='127.0.0.1' # название сервиса (контейнера)
+DB_PORT='5432' # порт для подключения к БД
+```
 
 ## Запуск проекта на удаленном сервере:
-Здесь опишу процесс запуска на сервере по мере написания создания инфраструктуры 
+Скорректировать и переместить на сервер конфигурационные файлы `docker-compose.yml` и `nginx.conf` из каталога `infra/`
+Запустите docker compose:
+```
+sudo docker-compose up
+```
+Создайте миграции в контейнере приложения `backend`
+```
+sudo docker-compose exec -it backend python manage.py makemigrations users
+sudo docker-compose exec -it backend python manage.py migrate
+sudo docker-compose exec -it backend python manage.py makemigrations recipes
+sudo docker-compose exec -it backend python manage.py migrate
+```
+Cоздайте суперпользователя
+```
+sudo docker-compose exec backend python manage.py createsuperuser
+```
+и импортируйте ингредиенты: 
+```
+sudo docker-compose exec backend python manage.py load_ingridients
+```
+Соберите статику:
+```
+sudo docker-compose exec backend python manage.py collectstatic
+```
 
 
 ## Эндпоинты:

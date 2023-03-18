@@ -1,5 +1,6 @@
 from django.contrib import admin
 from django.contrib.admin import TabularInline, register
+from django.utils.safestring import SafeString, mark_safe
 from .models import AmountIngredient, Tag, Ingredient, Recipe
 
 
@@ -8,6 +9,7 @@ EMPTY_VALUE = 'Значение не задано'
 
 class IngredientInline(TabularInline):
     model = AmountIngredient
+    min_num = 1
     extra = 2
 
 
@@ -15,6 +17,7 @@ class IngredientInline(TabularInline):
 class TagAdmin(admin.ModelAdmin):
     list_display = ('name', 'color', 'slug',)
     search_fields = ('name',)
+    prepopulated_fields = {'slug': ('name',)}
     save_on_top = True
     empty_value_display = EMPTY_VALUE
 
@@ -23,7 +26,6 @@ class TagAdmin(admin.ModelAdmin):
 class IngredientsAdmin(admin.ModelAdmin):
     list_display = ('name', 'measurement_unit',)
     search_fields = ('name',)
-    list_filter = ('name',)
     save_on_top = True
     empty_value_display = EMPTY_VALUE
 
@@ -31,7 +33,7 @@ class IngredientsAdmin(admin.ModelAdmin):
 @register(Recipe)
 class RecipeAdmin(admin.ModelAdmin):
     list_display = (
-        'name', 'author',
+        'name', 'author','amount_favorites',
     )
     fields = (
         ('name', 'cooking_time',),
@@ -45,9 +47,14 @@ class RecipeAdmin(admin.ModelAdmin):
         'name', 'author',
     )
     list_filter = (
-        'name', 'author__username',
+        'name', 'author__username', 'tags__name',
     )
 
     inlines = (IngredientInline,)
     save_on_top = True
     empty_value_display = EMPTY_VALUE
+
+    def amount_favorites(self, obj):
+        return obj.is_favorite.count()
+
+    amount_favorites.short_description = 'В избранном'
